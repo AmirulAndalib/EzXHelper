@@ -24,8 +24,4 @@ A library to make Xposed modules development easier, 2.x version supports Java!
 |              [Miui XXL](https://github.com/YuKongA/Miui_XXL)              | Miui XXL 是一个基于 Miui14 的自用大杂烩                                                           |
 |             [TwiFucker](https://github.com/Dr-TSNG/TwiFucker)             | Yet Another Adkiller for Twitter                                                                  |
 
-### Support for me
-
-If you like this project, you can buy me a cola via：
-
-- [Afadian](https://afdian.net/a/kyuubiran)
+[![Star History Chart](https://api.star-history.com/svg?repos=kyuubiran/ezxhelper&type=Date)](https://star-history.com/#kyuubiran/ezxhelper&Date)

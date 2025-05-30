@@ -26,8 +26,4 @@
 |             [TwiFucker](https://github.com/Dr-TSNG/TwiFucker)             | Yet Another Adkiller for Twitter                                                                  |
 |               [PureNGA](https://github.com/chr233/PureNGA)                | PureNGA 是一个去除NGA论坛APP广告的开源模块                                                        |
 
-### 捐赠支持
-
-如果你喜欢这个项目，且想要通过捐赠的方式支持我，可以通过以下渠道：
-
-- [爱发电](https://afdian.net/a/kyuubiran)
+![Star History Chart](https://api.star-history.com/svg?repos=kyuubiran/ezxhelper&type=Date)
