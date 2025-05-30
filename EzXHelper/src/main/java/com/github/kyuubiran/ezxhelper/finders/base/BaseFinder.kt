@@ -9,7 +9,7 @@ import com.github.kyuubiran.ezxhelper.misc.FinderExceptionMessage
 abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed {
     // region exception message
 
-    protected val exceptMsg: FinderExceptionMessage? =
+    protected var exceptMsg: FinderExceptionMessage? =
         if (Config.enableFinderExceptionMessage) FinderExceptionMessage() else null
 
     protected val exceptionMessageEnabled = exceptMsg != null
@@ -19,9 +19,11 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
 
     // endregion
 
+    abstract fun newFinder(): Self
+
     @Suppress("UNCHECKED_CAST")
-    protected inline fun applyThis(block: BaseFinder<T, Self>.() -> Unit) =
-        this.apply(block) as Self
+    protected inline fun makeNewFinder(block: BaseFinder<T, Self>.() -> Unit) =
+        (newFinder() as BaseFinder<T, Self>).apply(block).apply { exceptMsg = exceptMsg?.clone() } as Self
 
     // region get elem
 
@@ -109,12 +111,12 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
      * Check sequence only has one element.
      */
     @Throws(IllegalArgumentException::class, NoSuchElementException::class)
-    fun requireSingle() = applyThis {
+    fun requireSingle() = makeNewFinder {
         sequence.single()
     }
 
     @Throws(IllegalArgumentException::class, NoSuchElementException::class)
-    fun requireSingle(condition: T.() -> Boolean) = applyThis {
+    fun requireSingle(condition: T.() -> Boolean) = makeNewFinder {
         sequence.single(condition)
     }
 
@@ -134,7 +136,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
     }
 
     @Throws(IllegalStateException::class)
-    fun requireCount(count: Int) = applyThis {
+    fun requireCount(count: Int) = makeNewFinder {
         if (sequence.count() != count) {
             throw IllegalStateException("The count of sequence is not $count")
         }
@@ -146,7 +148,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
     }
 
     @Throws(IllegalStateException::class)
-    fun requireCount(condition: T.() -> Boolean, count: Int) = applyThis {
+    fun requireCount(condition: T.() -> Boolean, count: Int) = makeNewFinder {
         if (sequence.count(condition) != count) {
             throw IllegalStateException("The count of sequence is not $count")
         }
@@ -158,7 +160,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
     }
 
     @Throws(IllegalStateException::class)
-    fun requireCount(range: IntRange) = applyThis {
+    fun requireCount(range: IntRange) = makeNewFinder {
         if (sequence.count() !in range) {
             throw IllegalStateException("The count of sequence is not in $range")
         }
@@ -170,7 +172,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
     }
 
     @Throws(IllegalStateException::class)
-    fun requireCount(condition: T.() -> Boolean, range: IntRange) = applyThis {
+    fun requireCount(condition: T.() -> Boolean, range: IntRange) = makeNewFinder {
         if (sequence.count(condition) !in range) {
             throw IllegalStateException("The count of sequence is not in $range")
         }
@@ -204,7 +206,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
      * @param filter the predicate
      * @return [Self] the filtered finder
      */
-    fun filter(filter: T.() -> Boolean): Self = applyThis {
+    fun filter(filter: T.() -> Boolean): Self = makeNewFinder {
         sequence = sequence.filter(filter)
     }
 
@@ -215,7 +217,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
      * @param action the action
      * @return [Self] the finder
      */
-    fun onEach(action: (T) -> Unit): Self = applyThis { sequence.forEach(action) }
+    fun onEach(action: (T) -> Unit): Self = makeNewFinder { sequence.forEach(action) }
 
     /**
      * On-each loop with index for.
@@ -223,7 +225,7 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
      * @return [Self] the finder
      */
     fun onEachIndexed(action: (index: Int, T) -> Unit): Self =
-        applyThis { sequence.forEachIndexed(action) }
+        makeNewFinder { sequence.forEachIndexed(action) }
 
     /**
      * For-each loop for.
@@ -336,28 +338,28 @@ abstract class BaseFinder<T, Self>(protected var sequence: Sequence<T>) : INamed
     /**
      * Concatenate with another finder.
      */
-    fun contact(other: BaseFinder<T, Self>): Self = applyThis {
+    fun contact(other: BaseFinder<T, Self>): Self = makeNewFinder {
         sequence += other.sequence
     }
 
     /**
      * Concatenate with another sequence.
      */
-    fun contact(other: Sequence<T>): Self = applyThis {
+    fun contact(other: Sequence<T>): Self = makeNewFinder {
         sequence += other
     }
 
     /**
      * Concatenate with another array.
      */
-    fun contact(other: Array<T>): Self = applyThis {
+    fun contact(other: Array<T>): Self = makeNewFinder {
         sequence += other.asSequence()
     }
 
     /**
      * Concatenate with another iterable.
      */
-    fun contact(other: Iterable<T>): Self = applyThis {
+    fun contact(other: Iterable<T>): Self = makeNewFinder {
         sequence += other.asSequence()
     }
 

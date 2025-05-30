@@ -6,6 +6,7 @@ import com.github.kyuubiran.ezxhelper.finders.MethodFinder.`-Static`.methodFinde
 import java.lang.IllegalArgumentException
 
 object ObjectUtils {
+
     /**
      * Get the field object by the name in the object.
      * @param obj object
@@ -43,8 +44,9 @@ object ObjectUtils {
     @JvmStatic
     @Throws(NoSuchFieldException::class)
     fun getObjectOrNullUntilSuperclass(obj: Any, fieldName: String, untilSuperClass: (Class<*>.() -> Boolean)? = null): Any? {
-        var clazz: Class<*> = obj::class.java
+        var clazz: Class<*>? = obj::class.java
         while (clazz != Any::class.java) {
+            if (clazz == null) break
             if (untilSuperClass?.invoke(clazz) == true) break
 
             try {
@@ -115,8 +117,9 @@ object ObjectUtils {
     @JvmStatic
     @Throws(NoSuchFieldException::class)
     fun setObjectUntilSuperclass(obj: Any, fieldName: String, value: Any?, untilSuperClass: (Class<*>.() -> Boolean)? = null) {
-        var clazz: Class<*> = obj::class.java
+        var clazz: Class<*>? = obj::class.java
         while (clazz != Any::class.java) {
+            if (clazz == null) break
             if (untilSuperClass?.invoke(clazz) == true) break
 
             try {

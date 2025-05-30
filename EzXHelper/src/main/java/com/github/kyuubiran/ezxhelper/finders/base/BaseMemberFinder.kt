@@ -32,7 +32,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * @param modifiers the modifiers
      * @return [Self] the filtered finder
      */
-    fun filterByModifiers(modifiers: Int): Self = applyThis {
+    fun filterByModifiers(modifiers: Int): Self = makeNewFinder {
         sequence = sequence.filter { it.modifiers == modifiers }
         exceptMessageScope {
             condition(
@@ -46,7 +46,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * @param predicate the condition
      * @return [Self] the filtered finder
      */
-    fun filterByModifiers(predicate: (modifiers: Int) -> Boolean): Self = applyThis {
+    fun filterByModifiers(predicate: (modifiers: Int) -> Boolean): Self = makeNewFinder {
         sequence = sequence.filter { predicate(it.modifiers) }
         exceptMessageScope { condition("filterByModifiers(CustomCondition)") }
     }
@@ -56,7 +56,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * @param modifiers the modifiers.
      * @return [Self] the filtered finder
      */
-    fun filterIncludeModifiers(modifiers: Int): Self = applyThis {
+    fun filterIncludeModifiers(modifiers: Int): Self = makeNewFinder {
         sequence = sequence.filter { (it.modifiers and modifiers) != 0 }
         exceptMessageScope {
             condition(
@@ -70,7 +70,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * @param modifiers the modifiers.
      * @return [Self] the filtered finder
      */
-    fun filterExcludeModifiers(modifiers: Int): Self = applyThis {
+    fun filterExcludeModifiers(modifiers: Int): Self = makeNewFinder {
         sequence = sequence.filter { (it.modifiers and modifiers) == 0 }
         exceptMessageScope { condition("filterExcludeModifiers(${String.format("0x%08X", modifiers)} == [${Utils.getMemberModifiersString(modifiers)}])") }
     }
@@ -79,7 +79,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are public.
      * @return [Self] the filtered finder
      */
-    fun filterPublic() = applyThis {
+    fun filterPublic() = makeNewFinder {
         sequence = sequence.filter { Modifier.isPublic(it.modifiers) }
         exceptMessageScope { condition("filterPublic") }
     }
@@ -88,7 +88,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are non-public.
      * @return [Self] the filtered finder
      */
-    fun filterNonPublic() = applyThis {
+    fun filterNonPublic() = makeNewFinder {
         sequence = sequence.filter { !Modifier.isPublic(it.modifiers) }
         exceptMessageScope { condition("filterNonPublic") }
     }
@@ -97,7 +97,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are protected.
      * @return [Self] the filtered finder
      */
-    fun filterProtected() = applyThis {
+    fun filterProtected() = makeNewFinder {
         sequence = sequence.filter { Modifier.isProtected(it.modifiers) }
         exceptMessageScope { condition("filterProtected") }
     }
@@ -106,7 +106,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are non-protected.
      * @return [Self] the filtered finder
      */
-    fun filterNonProtected() = applyThis {
+    fun filterNonProtected() = makeNewFinder {
         sequence = sequence.filter { !Modifier.isProtected(it.modifiers) }
         exceptMessageScope { condition("filterNonProtected") }
     }
@@ -115,7 +115,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are private.
      * @return [Self] the filtered finder
      */
-    fun filterPrivate() = applyThis {
+    fun filterPrivate() = makeNewFinder {
         sequence = sequence.filter { Modifier.isPrivate(it.modifiers) }
         exceptMessageScope { condition("filterPrivate") }
     }
@@ -124,7 +124,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are non-private.
      * @return [Self] the filtered finder
      */
-    fun filterNonPrivate() = applyThis {
+    fun filterNonPrivate() = makeNewFinder {
         sequence = sequence.filter { !Modifier.isPrivate(it.modifiers) }
         exceptMessageScope { condition("filterNonPrivate") }
     }
@@ -133,7 +133,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are package-private.
      * @return [Self] the filtered finder
      */
-    fun filterPackagePrivate() = applyThis {
+    fun filterPackagePrivate() = makeNewFinder {
         sequence = sequence.filter { it.isPackagePrivate }
         exceptMessageScope { condition("filterPackagePrivate") }
     }
@@ -142,7 +142,7 @@ abstract class BaseMemberFinder<T, Self> constructor(memberSequence: Sequence<T>
      * Filter if they are non-package-private.
      * @return [Self] the filtered finder
      */
-    fun filterNonPackagePrivate() = applyThis {
+    fun filterNonPackagePrivate() = makeNewFinder {
         sequence = sequence.filter { it.isNotPackagePrivate }
         exceptMessageScope { condition("filterNonPackagePrivate") }
     }

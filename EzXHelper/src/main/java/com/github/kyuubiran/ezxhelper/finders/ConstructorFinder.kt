@@ -12,11 +12,13 @@ import kotlin.reflect.KClass
  * Helper for finding constructor(s) in the class or collection.
  */
 class ConstructorFinder private constructor(seq: Sequence<Constructor<*>>) : ExecutableFinder<Constructor<*>, ConstructorFinder>(seq) {
+
     override val name: String
         get() = "ConstructorFinder"
 
     @Suppress("ClassName")
     companion object `-Static` {
+
         @JvmStatic
         fun fromClass(clazz: Class<*>): ConstructorFinder {
             return ConstructorFinder(clazz.declaredConstructors.asSequence()).apply {
@@ -80,7 +82,10 @@ class ConstructorFinder private constructor(seq: Sequence<Constructor<*>>) : Exe
     }
 
     // region overrides
+
     override fun getParameterTypes(member: Constructor<*>): Array<Class<*>> = member.parameterTypes
     override fun getExceptionTypes(member: Constructor<*>): Array<Class<*>> = member.exceptionTypes
+    override fun newFinder(): ConstructorFinder = ConstructorFinder(sequence)
+
     // endregion
 }

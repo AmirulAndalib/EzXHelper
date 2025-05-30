@@ -15,7 +15,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param paramTypes parameter types
      * @return [Self] this finder
      */
-    fun filterByParamTypes(vararg paramTypes: Class<*>?) = applyThis {
+    fun filterByParamTypes(vararg paramTypes: Class<*>?) = makeNewFinder {
         sequence = sequence.filter f@{
             val pt = getParameterTypes(it)
             if (pt.size != paramTypes.size) return@f false
@@ -36,7 +36,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param paramTypes parameter types
      * @return [Self] this finder
      */
-    fun filterByAssignableParamTypes(vararg paramTypes: Class<*>?) = applyThis {
+    fun filterByAssignableParamTypes(vararg paramTypes: Class<*>?) = makeNewFinder {
         sequence = sequence.filter f@{
             val pt = getParameterTypes(it)
             if (pt.size != paramTypes.size) return@f false
@@ -58,7 +58,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * Filter the executable if the parameter is empty
      * @return [Self] this finder
      */
-    fun filterEmptyParam() = applyThis {
+    fun filterEmptyParam() = makeNewFinder {
         sequence = sequence.filter { getParameterTypes(it).isEmpty() }
         exceptMessageScope { condition("filterEmptyParam") }
     }
@@ -67,7 +67,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * Filter the executable if the parameter is not empty
      * @return [Self] this finder
      */
-    fun filterNotEmptyParam() = applyThis {
+    fun filterNotEmptyParam() = makeNewFinder {
         sequence = sequence.filter { getParameterTypes(it).isNotEmpty() }
         exceptMessageScope { condition("filterNotEmptyParam") }
     }
@@ -77,7 +77,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param predicate condition
      * @return [Self] this finder
      */
-    fun filterByParamTypes(predicate: (Array<Class<*>>) -> Boolean) = applyThis {
+    fun filterByParamTypes(predicate: (Array<Class<*>>) -> Boolean) = makeNewFinder {
         sequence = sequence.filter { predicate(getParameterTypes(it)) }
         exceptMessageScope { condition("filterByParamTypes(CustomCondition)") }
     }
@@ -87,7 +87,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param count parameter count
      * @return [Self] this finder
      */
-    fun filterByParamCount(count: Int) = applyThis {
+    fun filterByParamCount(count: Int) = makeNewFinder {
         sequence = sequence.filter { getParameterTypes(it).size == count }
         exceptMessageScope { condition("filterByParamCount(count == $count)") }
     }
@@ -97,7 +97,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param predicate condition
      * @return [Self] this finder
      */
-    fun filterByParamCount(predicate: (Int) -> Boolean) = applyThis {
+    fun filterByParamCount(predicate: (Int) -> Boolean) = makeNewFinder {
         sequence = sequence.filter { predicate(getParameterTypes(it).size) }
         exceptMessageScope { condition("filterByParamCount(CustomCondition)") }
     }
@@ -107,7 +107,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param range parameter count range
      * @return [Self] this finder
      */
-    fun filterByParamCount(range: IntRange) = applyThis {
+    fun filterByParamCount(range: IntRange) = makeNewFinder {
         sequence = sequence.filter { getParameterTypes(it).size in range }
         exceptMessageScope { condition("filterByParamCount(${range.first} <= count <= ${range.last})") }
     }
@@ -117,7 +117,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * @param exceptionTypes exception types
      * @return [Self] this finder
      */
-    fun filterByExceptionTypes(vararg exceptionTypes: Class<*>) = applyThis {
+    fun filterByExceptionTypes(vararg exceptionTypes: Class<*>) = makeNewFinder {
         val set = exceptionTypes.toSet()
         sequence = sequence.filter { getExceptionTypes(it).run { size == set.size && toSet() == set } }
         exceptMessageScope { condition("filterByExceptionTypes(${set.joinToString { it.name }})") }
@@ -131,7 +131,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * Filter if they are native.
      * @return [Self] this finder
      */
-    fun filterNative() = applyThis {
+    fun filterNative() = makeNewFinder {
         sequence = sequence.filter { Modifier.isNative(it.modifiers) }
         exceptMessageScope { condition("filterNative") }
     }
@@ -140,7 +140,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * Filter if they are non-native.
      * @return [Self] this finder
      */
-    fun filterNonNative() = applyThis {
+    fun filterNonNative() = makeNewFinder {
         sequence = sequence.filter { !Modifier.isNative(it.modifiers) }
         exceptMessageScope { condition("filterNonNative") }
     }
@@ -149,7 +149,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * Filter if they are varargs.
      * @return [Self] this finder
      */
-    fun filterVarargs() = applyThis {
+    fun filterVarargs() = makeNewFinder {
         sequence = sequence.filter { it.modifiers and MemberExtensions.VARARGS != 0 }
         exceptMessageScope { condition("filterVarargs") }
     }
@@ -158,7 +158,7 @@ abstract class ExecutableFinder<E : Member, Self>(seq: Sequence<E>) : BaseMember
      * Filter if they are non-varargs.
      * @return [Self] this finder
      */
-    fun filterNonVarargs() = applyThis {
+    fun filterNonVarargs() = makeNewFinder {
         sequence = sequence.filter { it.modifiers and MemberExtensions.VARARGS == 0 }
         exceptMessageScope { condition("filterNonVarargs") }
     }

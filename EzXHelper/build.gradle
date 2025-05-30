@@ -9,13 +9,12 @@ plugins {
 def versionName = "2.2.1"
 
 android {
-    compileSdkVersion = 35
-    buildToolsVersion = "35.0.1"
+    compileSdkVersion = 36
     namespace = "com.github.kyuubiran"
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 35
+        targetSdkVersion 36
 
         consumerProguardFiles "consumer-rules.pro"
     }

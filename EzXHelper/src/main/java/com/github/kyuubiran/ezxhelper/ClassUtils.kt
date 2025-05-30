@@ -8,6 +8,7 @@ import com.github.kyuubiran.ezxhelper.finders.MethodFinder.`-Static`.methodFinde
 import java.lang.IllegalArgumentException
 
 object ClassUtils {
+
     /**
      * Load the class or null if not found
      * @param className class name
@@ -111,8 +112,9 @@ object ClassUtils {
     @JvmStatic
     @Throws(NoSuchFieldException::class)
     fun getStaticObjectOrNullUntilSuperclass(clazz: Class<*>, fieldName: String, untilSuperClass: (Class<*>.() -> Boolean)? = null): Any? {
-        var clz: Class<*> = clazz
+        var clz: Class<*>? = clazz
         while (clz != Any::class.java) {
+            if (clz == null) break
             if (untilSuperClass?.invoke(clz) == true) break
 
             try {
@@ -178,8 +180,9 @@ object ClassUtils {
     @JvmStatic
     @Throws(NoSuchFieldException::class)
     fun setStaticObjectUntilSuperclass(clazz: Class<*>, fieldName: String, value: Any?, untilSuperClass: (Class<*>.() -> Boolean)? = null) {
-        var clz: Class<*> = clazz
+        var clz: Class<*>? = clazz
         while (clz != Any::class.java) {
+            if (clz == null) break
             if (untilSuperClass?.invoke(clz) == true) break
 
             try {

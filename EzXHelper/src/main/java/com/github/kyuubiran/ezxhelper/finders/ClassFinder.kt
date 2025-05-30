@@ -68,24 +68,24 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
         }
     }
 
-    fun filterPackage(packageName: String) = applyThis {
+    fun filterPackage(packageName: String) = makeNewFinder {
         sequence = sequence.filter { it.name.startsWith(packageName) }
         exceptMessageScope { condition("filterPackage($packageName)") }
     }
 
-    fun filterHasFieldType(type: Class<*>) = applyThis {
+    fun filterHasFieldType(type: Class<*>) = makeNewFinder {
         sequence = sequence.filter { it.fields.any { field -> field.type == type } }
         exceptMessageScope { condition("filterHasFieldType(${type.name})") }
     }
 
-    fun filterHasFieldTypeAndCount(type: Class<*>, count: Int) = applyThis {
+    fun filterHasFieldTypeAndCount(type: Class<*>, count: Int) = makeNewFinder {
         sequence = sequence.filter { it.fields.count { field -> field.type == type } == count }
         exceptMessageScope { condition("filterHasFieldTypeAndCount(Type=${type.name}, Cnt=$count)") }
     }
 
     @JvmOverloads
     fun filterHasFieldTypeAndCountIn(type: Class<*>, min: Int = 1, max: Int = Int.MAX_VALUE) =
-        applyThis {
+        makeNewFinder {
             sequence = sequence.filter {
                 val count = it.fields.count { field -> field.type == type }
                 count in min..max
@@ -95,7 +95,7 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
 
 
     fun filterHasFieldTypeAndCountIn(type: Class<*>, range: IntRange) =
-        applyThis {
+        makeNewFinder {
             sequence = sequence.filter {
                 val count = it.fields.count { field -> field.type == type }
                 count in range
@@ -103,27 +103,27 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
             exceptMessageScope { condition("filterHasFieldTypeAndCountIn(Type=${type.name}, Min=${range.first}, Max=${range.last})") }
         }
 
-    fun filterHasFieldTypeName(typeName: String) = applyThis {
+    fun filterHasFieldTypeName(typeName: String) = makeNewFinder {
         sequence = sequence.filter { it.fields.any { field -> field.type.name == typeName } }
         exceptMessageScope { condition("filterHasFieldTypeName($typeName)") }
     }
 
-    fun filterHasFieldName(fieldName: String) = applyThis {
+    fun filterHasFieldName(fieldName: String) = makeNewFinder {
         sequence = sequence.filter { it.fields.any { field -> field.name == fieldName } }
         exceptMessageScope { condition("filterHasFieldName($fieldName)") }
     }
 
-    fun filterHasMethodName(methodName: String) = applyThis {
+    fun filterHasMethodName(methodName: String) = makeNewFinder {
         sequence = sequence.filter { it.methods.any { method -> method.name == methodName } }
         exceptMessageScope { condition("filterHasMethodName($methodName)") }
     }
 
-    fun filterHasMethodReturnType(returnType: Class<*>) = applyThis {
+    fun filterHasMethodReturnType(returnType: Class<*>) = makeNewFinder {
         sequence = sequence.filter { it.methods.any { method -> method.returnType == returnType } }
         exceptMessageScope { condition("filterHasMethodReturnType($returnType)") }
     }
 
-    fun filterHasMethodSignature(returnType: Class<*>, vararg paramTypes: Class<*>) = applyThis {
+    fun filterHasMethodSignature(returnType: Class<*>, vararg paramTypes: Class<*>) = makeNewFinder {
         sequence = sequence.filter { clazz ->
             clazz.methods.any { method ->
                 method.returnType == returnType && method.parameterTypes.contentEquals(paramTypes)
@@ -134,7 +134,7 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
         }
     }
 
-    fun filterHasConstructorSignature(vararg paramTypes: Class<*>) = applyThis {
+    fun filterHasConstructorSignature(vararg paramTypes: Class<*>) = makeNewFinder {
         sequence = sequence.filter { clazz ->
             clazz.constructors.any { constructor -> constructor.parameterTypes.contentEquals(paramTypes) }
         }
@@ -143,7 +143,7 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
         }
     }
 
-    fun filterImplementInterfaces(vararg interfaces: Class<*>) = applyThis {
+    fun filterImplementInterfaces(vararg interfaces: Class<*>) = makeNewFinder {
         sequence = sequence.filter { clazz ->
             interfaces.all { interfaceClass -> interfaceClass.isAssignableFrom(clazz) }
         }
@@ -152,14 +152,14 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
         }
     }
 
-    fun filterHasConstructorCount(cnt: Int) = applyThis {
+    fun filterHasConstructorCount(cnt: Int) = makeNewFinder {
         sequence = sequence.filter { clazz -> clazz.constructors.count() == cnt }
         exceptMessageScope {
             condition("filterHasConstructorCount($cnt)")
         }
     }
 
-    fun filterHasConstructorCountIn(range: IntRange) = applyThis {
+    fun filterHasConstructorCountIn(range: IntRange) = makeNewFinder {
         sequence = sequence.filter { clazz -> clazz.constructors.count() in range }
         exceptMessageScope {
             condition("filterHasConstructorCountIn(Min=${range.first}, Max=${range.last})")
@@ -167,145 +167,147 @@ class ClassFinder private constructor(seq: Sequence<Class<*>>) :
     }
 
     @JvmOverloads
-    fun filterHasConstructorCountIn(min: Int = 1, max: Int = Int.MAX_VALUE) = applyThis {
+    fun filterHasConstructorCountIn(min: Int = 1, max: Int = Int.MAX_VALUE) = makeNewFinder {
         sequence = sequence.filter { clazz -> clazz.constructors.count() in min..max }
         exceptMessageScope {
             condition("filterHasConstructorCountIn(Min=$min, Max=$max)")
         }
     }
 
-    fun filterIsSubclassOf(superclass: Class<*>) = applyThis {
+    fun filterIsSubclassOf(superclass: Class<*>) = makeNewFinder {
         sequence = sequence.filter { superclass.isAssignableFrom(it) }
         exceptMessageScope { condition("filterIsSubclassOf(${superclass.name})") }
     }
 
-    fun filterIsAbstract() = applyThis {
+    fun filterIsAbstract() = makeNewFinder {
         sequence = sequence.filter { it.isAbstract }
         exceptMessageScope { condition("filterIsAbstract") }
     }
 
-    fun filterIsNotAbstract() = applyThis {
+    fun filterIsNotAbstract() = makeNewFinder {
         sequence = sequence.filter { !it.isAbstract }
         exceptMessageScope { condition("filterIsNotAbstract") }
     }
 
-    fun filterIsInterface() = applyThis {
+    fun filterIsInterface() = makeNewFinder {
         sequence = sequence.filter { it.isInterface }
         exceptMessageScope { condition("filterIsInterface") }
     }
 
-    fun filterIsNotInterface() = applyThis {
+    fun filterIsNotInterface() = makeNewFinder {
         sequence = sequence.filter { !it.isInterface }
         exceptMessageScope { condition("filterIsNotInterface") }
     }
 
-    fun filterIsEnum() = applyThis {
+    fun filterIsEnum() = makeNewFinder {
         sequence = sequence.filter { it.isEnum }
         exceptMessageScope { condition("filterIsEnum") }
     }
 
-    fun filterIsNotEnum() = applyThis {
+    fun filterIsNotEnum() = makeNewFinder {
         sequence = sequence.filter { !it.isEnum }
         exceptMessageScope { condition("filterIsNotEnum") }
     }
 
-    fun filterIsAnnotation() = applyThis {
+    fun filterIsAnnotation() = makeNewFinder {
         sequence = sequence.filter { it.isAnnotation }
         exceptMessageScope { condition("filterIsAnnotation") }
     }
 
-    fun filterIsNotAnnotation() = applyThis {
+    fun filterIsNotAnnotation() = makeNewFinder {
         sequence = sequence.filter { !it.isAnnotation }
         exceptMessageScope { condition("filterIsNotAnnotation") }
     }
 
-    fun filterIsPublic() = applyThis {
+    fun filterIsPublic() = makeNewFinder {
         sequence = sequence.filter { it.isPublic }
         exceptMessageScope { condition("filterIsPublic") }
     }
 
-    fun filterIsNotPublic() = applyThis {
+    fun filterIsNotPublic() = makeNewFinder {
         sequence = sequence.filter { !it.isPublic }
         exceptMessageScope { condition("filterIsNotPublic") }
     }
 
-    fun filterIsFinal() = applyThis {
+    fun filterIsFinal() = makeNewFinder {
         sequence = sequence.filter { it.isFinal }
         exceptMessageScope { condition("filterIsFinal") }
     }
 
-    fun filterIsNotFinal() = applyThis {
+    fun filterIsNotFinal() = makeNewFinder {
         sequence = sequence.filter { !it.isFinal }
         exceptMessageScope { condition("filterIsNotFinal") }
     }
 
-    fun filterIsSynthetic() = applyThis {
+    fun filterIsSynthetic() = makeNewFinder {
         sequence = sequence.filter { it.isSynthetic }
         exceptMessageScope { condition("filterIsSynthetic") }
     }
 
-    fun filterIsNotSynthetic() = applyThis {
+    fun filterIsNotSynthetic() = makeNewFinder {
         sequence = sequence.filter { !it.isSynthetic }
         exceptMessageScope { condition("filterIsNotSynthetic") }
     }
 
-    fun filterIsAnonymous() = applyThis {
+    fun filterIsAnonymous() = makeNewFinder {
         sequence = sequence.filter { it.isAnonymousClass }
         exceptMessageScope { condition("filterIsAnonymous") }
     }
 
-    fun filterIsNotAnonymous() = applyThis {
+    fun filterIsNotAnonymous() = makeNewFinder {
         sequence = sequence.filter { !it.isAnonymousClass }
         exceptMessageScope { condition("filterIsNotAnonymous") }
     }
 
-    fun filterIsLocal() = applyThis {
+    fun filterIsLocal() = makeNewFinder {
         sequence = sequence.filter { it.isLocalClass }
         exceptMessageScope { condition("filterIsLocal") }
     }
 
-    fun filterIsNotLocal() = applyThis {
+    fun filterIsNotLocal() = makeNewFinder {
         sequence = sequence.filter { !it.isLocalClass }
         exceptMessageScope { condition("filterIsNotLocal") }
     }
 
-    fun filterIsMember() = applyThis {
+    fun filterIsMember() = makeNewFinder {
         sequence = sequence.filter { it.isMemberClass }
         exceptMessageScope { condition("filterIsMember") }
     }
 
-    fun filterIsNotMember() = applyThis {
+    fun filterIsNotMember() = makeNewFinder {
         sequence = sequence.filter { !it.isMemberClass }
         exceptMessageScope { condition("filterIsNotMember") }
     }
 
-    fun filterIsPrimitive() = applyThis {
+    fun filterIsPrimitive() = makeNewFinder {
         sequence = sequence.filter { it.isPrimitive }
         exceptMessageScope { condition("filterIsPrimitive") }
     }
 
-    fun filterIsNotPrimitive() = applyThis {
+    fun filterIsNotPrimitive() = makeNewFinder {
         sequence = sequence.filter { !it.isPrimitive }
         exceptMessageScope { condition("filterIsNotPrimitive") }
     }
 
-    fun filterIsArray() = applyThis {
+    fun filterIsArray() = makeNewFinder {
         sequence = sequence.filter { it.isArray }
         exceptMessageScope { condition("filterIsArray") }
     }
 
-    fun filterIsNotArray() = applyThis {
+    fun filterIsNotArray() = makeNewFinder {
         sequence = sequence.filter { !it.isArray }
         exceptMessageScope { condition("filterIsNotArray") }
     }
 
-    fun filterIsAnnotationPresent(annotation: Class<out Annotation>) = applyThis {
+    fun filterIsAnnotationPresent(annotation: Class<out Annotation>) = makeNewFinder {
         sequence = sequence.filter { it.isAnnotationPresent(annotation) }
         exceptMessageScope { condition("filterIsAnnotationPresent(${annotation.name})") }
     }
 
-    fun filterIsNotAnnotationPresent(annotation: Class<out Annotation>) = applyThis {
+    fun filterIsNotAnnotationPresent(annotation: Class<out Annotation>) = makeNewFinder {
         sequence = sequence.filter { !it.isAnnotationPresent(annotation) }
         exceptMessageScope { condition("filterIsNotAnnotationPresent(${annotation.name})") }
     }
+
+    override fun newFinder(): ClassFinder = ClassFinder(sequence)
 }
